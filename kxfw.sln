@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kxfw", "kxfw.vcproj", "{68564CA5-0DF3-4F97-BBA1-F0296492B7A3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UIShower", "UIShower\UIShower.vcproj", "{AF9D13CB-668B-482E-98AA-1B67C623A1AF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{68564CA5-0DF3-4F97-BBA1-F0296492B7A3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{68564CA5-0DF3-4F97-BBA1-F0296492B7A3}.Debug|Win32.Build.0 = Debug|Win32
+		{68564CA5-0DF3-4F97-BBA1-F0296492B7A3}.Release|Win32.ActiveCfg = Release|Win32
+		{68564CA5-0DF3-4F97-BBA1-F0296492B7A3}.Release|Win32.Build.0 = Release|Win32
+		{AF9D13CB-668B-482E-98AA-1B67C623A1AF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AF9D13CB-668B-482E-98AA-1B67C623A1AF}.Debug|Win32.Build.0 = Debug|Win32
+		{AF9D13CB-668B-482E-98AA-1B67C623A1AF}.Release|Win32.ActiveCfg = Release|Win32
+		{AF9D13CB-668B-482E-98AA-1B67C623A1AF}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

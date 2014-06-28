@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" ?>
+<uitree>
+  <KMessageBox objectName="topLevelWindow" titlebar.iconPath="" titlebar.margins="3,1,1,1" titlebar.fixHeight="20" windowStyle="Dialog">
+    <KSpacer layout="VBox" margins="10,5,10,10">
+      <KSpacer objectName="objMeasure" layout="HBox">
+        <KFrameItem objectName="iconShower" fixSize="45,45" frameType="OneHCenter"/>
+        <KTextItem objectName="textShower" text="MyTest" readOnly="true" selectable="false"/>
+      </KSpacer>
+      <KSpacer fixHeight="10"/>
+      <KSpacer layout="HBox" fixHeight="25">
+        <KSpacer/>
+        <KToolBar objectName="buttonToolbar" layout="HBox" sizeToChild="true">
+          <KPushButton objectName="button0" text="OK" fixWidth="60" itemSpacing="10"/>
+          <KPushButton objectName="button1" text="Cancel" fixWidth="60" itemSpacing="10"/>
+          <KPushButton objectName="button2" text="Abort" fixWidth="60"/>
+        </KToolBar>
+        <KSpacer/>
+      </KSpacer>
+    </KSpacer>
+  </KMessageBox>
+</uitree>

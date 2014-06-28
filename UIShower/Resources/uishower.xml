@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<uiproperty/>
+<uitree>
+  <KFrameWindow objectName="UiShower" fontName="微软雅黑" titlebar.title="UIShower" titlebar.margin="0,0,0,0" titlebar.titleColor="black" titlebar.titleBold="true" size="400,300" translucent="true"  windowStyle="MainWindow">
+    <DropObjectWidget objectName="A" layout="VBox" margins="20,20,20,20">
+      <KButtonGroup layout="HBox" fixHeight="30" margins="30,0,30,0">
+        <KRadioButton objectName="btnWindowCreate" text="加载XML创建窗口" check="true"/>
+        <KRadioButton objectName="btnContentCreate" text="加载XML创建内容"/>
+      </KButtonGroup>
+      <KWidget backgroundColor="255,255,255,50" layout="VBox">
+        <KLabel text="把UI的XML文件拖放到这里..." textAlignment="AlignCenter"/>
+      </KWidget>
+    </DropObjectWidget>
+    <KWidget layout="HBox"  fixHeight="30" backgroundColor="255,255,255,50" margin="20,3,20,3">
+       <KTextItem text="更多内容，请关注我的网站：&lt;a href=&quot;http://kxtry.com&quot;&gt;开心&amp;努力[http://kxtry.com]&lt;/a&gt;"/>
+    </KWidget>
+</KFrameWindow>
+</uitree>
+<uihelper>
+  <KHelper targetPath="A/btnWindowCreate"/>
+</uihelper>

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<uiproperty/>
+<uitree>
+  <KFrameWindow objectName="UiShower" title="UIShower" fixSize="800,600" windowStyle="AppWindow">  	
+    <KSpacer layout="VBox" margins="5,5,5,5">
+    	<KShapeItem fixSize="200,200" shape="Ellipse" backgroundColor="#000000" penStyle="DashLine" smooth="true" gradient="Center:0.5,0.5|Angle:120.0|Color:0:Red|Color:0.5:Green|Color:1:Blue|Spread:Pad" shapeMargins="10,10,10,10"/>
+      <KSpacer layout="HBox" fixHeight="25">
+        <KLineEdit objectName="lineEdit" hasFrame="true"/>
+        <KPushButton objectName="btnAdd" text="增加"/>
+        <KPushButton objectName="btnSub" text="减少"/>
+        <KPushButton objectName="btnRandom" text="随机"/>
+      </KSpacer>
+      <KSpacer objectName="hitoryCombo" layout="VBox" fixSize="-1,24" widgetFlags="ClipsChildrenToShape">
+        <KHistoryComboBox fixWidth="80" listText="所有人" edit.doubleValidator="0.0,4.0"/>
+      </KSpacer>
+      <KAnimationItem fixSize="48,148" playPolicy="PlayToVisible" smooth="true" stretch="true" borderPixel="1" borderColor="255,0,0" roundPixel="3" imagePath="C:\Users\Administrator\AppData\Roaming\xueren\Gifts\5f132e6d208172eaf2bc6f2c6b8e7377.gif"/>
+      <KCommonListWidget objectName="objList" itemsText="A|B|C"/>      
+    </KSpacer>
+  </KFrameWindow>
+</uitree>
+<uihelper>
+  <KHelper targetPath="A/btnWindowCreate"/>
+</uihelper>

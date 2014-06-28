@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/image"/>
+    <qresource prefix="/layout">
+        <file>Resources/uishower.xml</file>
+        <file>Resources/uicontainer.xml</file>
+    </qresource>
+</RCC>
