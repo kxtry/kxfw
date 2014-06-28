@@ -178,6 +178,7 @@ public:
 
 public:
 	bool isModified();
+	void setModified(bool m=true);
 	bool fontBold();
 	void setFontBold(bool on);
 	bool fontItalic();

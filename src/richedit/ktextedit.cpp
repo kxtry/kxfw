@@ -529,6 +529,11 @@ bool KTextEdit::isModified()
 	return document()->isModified();
 }
 
+void KTextEdit::setModified(bool m)
+{
+	document()->setModified(m);
+}
+
 void KTextEdit::setFontBold(bool on)
 {
 	m_edit->setFontWeight(on ? QFont::Bold : QFont::Normal);
