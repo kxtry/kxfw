@@ -10,6 +10,8 @@
 #include "klistwidget_p.h"
 
 
+KX_WIDGET_CREATOR_GLOBAL_STATIC(KListWidget)
+
 #define ITEM_DEFAULT_HEIGHT		(20)
 
 #define SCROLLBAR_THICKNESS		(18)

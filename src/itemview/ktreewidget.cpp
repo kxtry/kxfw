@@ -11,6 +11,8 @@
 #define DEPTH_INDENTATION	(16)
 #define BRANCH_FRAME_SIZE	(9)
 
+KX_WIDGET_CREATOR_GLOBAL_STATIC(KTreeWidget)
+
 class TreeItemCall : public ItemCall
 {
 public:
