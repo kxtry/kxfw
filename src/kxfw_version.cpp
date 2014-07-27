@@ -1,12 +1,12 @@
 #pragma once
 /*--------------------------------------------------------------------
 * don't changed this file,it wile autogernate.
-* the detail time is: 2014/07/20 周日 10:58:05.54
+* the detail time is: 2014/07/27 周日  0:00:34.96
 --------------------------------------------------------------------*/
 #include "stdafx.h" 
 #include "kxfw_version.h"
 /*version string date*/  
 char *getKxfwBuildingTime()
 {
-    return "2014-07-20";
+    return "2014-07-27";
 }

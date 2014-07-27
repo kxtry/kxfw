@@ -28,7 +28,6 @@ public:
 	int m_heightContentTopHidden;
 	int m_heightContentBottomHidden;
 	QPointer<KScrollBar> m_scrollbar;
-	int m_thinknessScrollbar;
 
 	QVariant m_cfgCustom;
 
