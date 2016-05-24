@@ -8,6 +8,8 @@
 #include "kwidget_p.h"
 #include "ktooltip.h"
 
+#include <QMetaObject>
+
 KX_WIDGET_CREATOR_GLOBAL_STATIC(KTitlebar)
 
 class KTitlebarPrivate : public KWidgetPrivate
@@ -150,26 +152,30 @@ void KTitlebar::buttonClicked()
 {
 	KPushButton *btn = (KPushButton*)(sender());
 	QGraphicsView *view = this->view();
+	HWND hWnd = view->winId();
+	/*
+	不能使用Qt的Maximize和Minimize的操作，主要是由于Win7系统上由于启用AeroSnap功能后，会造成Qt内部Maximize和Minimize操作会判断错误。
+	*/
 	if(btn == d_func()->btnClose)
 	{
 		QMetaObject::invokeMethod(view, "onCloseClick");
 	}
 	else if(btn == d_func()->btnOrgMax)
 	{
-		if(view->isMaximized())
+		if(::IsMaximized(hWnd))
 		{
-			view->showNormal();
+			::ShowWindow(hWnd, SW_RESTORE);
 			setMaximumPath(":/image/theme/framemax_normal.png|:/image/theme/framemax_hover.png|:/image/theme/framemax_down.png");
 		}
 		else
 		{
-			view->showMaximized();
+			::ShowWindow(hWnd, SW_MAXIMIZE);
 			setRestorePath(":/image/theme/framerestore_normal.png|:/image/theme/framerestore_hover.png|:/image/theme/framerestore_down.png");
 		}
 	}
 	else if(btn == d_func()->btnMin)
 	{
-		view->showMinimized();
+		::ShowWindow(hWnd, SW_MINIMIZE);
 	}
 }
 
@@ -197,7 +203,9 @@ void KTitlebar::updateTitelbar()
 	KPopupWindow *gv = qobject_cast<KPopupWindow*>(view());
 	if(gv == NULL)
 		return;
-	
+
+	HWND hWnd = gv->winId();
+
 	DWORD dwStyle = GetWindowLong(gv->winId(), GWL_STYLE);
 	if(gv->minimumButton())
 	{
@@ -209,7 +217,7 @@ void KTitlebar::updateTitelbar()
 	}
 	if(gv->maximumButton())
 	{
-		if(view()->isMaximized())
+		if(::IsMaximized(hWnd))
 		{
 			d->btnOrgMax->setImagePath(d->szOrgImage);
 		}
@@ -267,13 +275,14 @@ void KTitlebar::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
 		if(!var.toBool())
 			return;
 	}
-	if(gv->isMaximized())
+	HWND hWnd = gv->winId();
+	if(::IsMaximized(hWnd))
 	{
-		gv->showNormal();
+		::ShowWindow(hWnd, SW_RESTORE);
 	}
 	else
 	{
-		gv->showMaximized();
+		::ShowWindow(hWnd, SW_MAXIMIZE);
 	}
 }
 

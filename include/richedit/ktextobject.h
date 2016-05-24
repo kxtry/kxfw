@@ -6,6 +6,8 @@
 
 class KTextObjectPrivate;
 
+#define defTextObjectIndex	QTextFormat::ObjectIndex + 1000
+
 class KXFW_API KTextObject: public QObject, public QTextObjectInterface
 {
 public:
@@ -20,19 +22,21 @@ public:
 public:
 	explicit KTextObject( KTextEdit* editor );
 
-	void commonEvent(QMouseEvent* event, quint32 textObjectIndex);
-
 protected:
 	explicit KTextObject( KTextObjectPrivate &dd, KTextEdit* editor );
 	virtual ~KTextObject();
 
 	virtual QSizeF intrinsicSize( QTextDocument *doc, int posInDocument, const QTextFormat &format);
 	virtual void drawObject(QPainter *painter, const QRectF &rect, QTextDocument *doc, int posInDocument, const QTextFormat &format);
+	virtual void commonEvent(QMouseEvent* event, quint32 textObjectIndex);
+
+	KTextEdit *textEdit() const;
 
 protected:
 	KTextObjectPrivate * d_ptr;
 
 private:
+	friend class QTextBrowserEx;
 	void _init();
 };
 

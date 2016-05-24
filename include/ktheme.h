@@ -37,6 +37,8 @@ public:
 
 	static void setSkinName(QObject* obj, const QString& name);
 
+	static void EnableAeroSnap(bool on);
+
 	static QSize virtualScreenSize();
 	static QRect virtualScreenRect();
 	static void resetTheme();

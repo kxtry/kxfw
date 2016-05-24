@@ -54,6 +54,7 @@ public:
 	Q_PROPERTY(QString frameImage READ frameImage WRITE setFrameImage)
 	Q_PROPERTY(QString backgroundImage READ backgroundImage WRITE setBackgroundImage)
 	Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor)
+	Q_PROPERTY(bool enableAeroSnap READ enableAeroSnap WRITE setAeroSnapEnable)
 
 public:
 	explicit KPopupWindow(QWidget *parent=NULL);
@@ -125,6 +126,9 @@ public:
 	WindowStyles windowStyle() const;
 	void setWindowStyle(WindowStyles style);
 
+	bool enableAeroSnap() const;
+	void setAeroSnapEnable(bool on);
+
 	void setWindowIcon(HINSTANCE hInst, int resid);
 	void setWindowIcon(HINSTANCE hInst, const char* ico);
 	void setWindowIcon(const QIcon& ico);
@@ -155,6 +159,7 @@ protected:
 
 protected slots:
 	virtual void onCloseClick();
+
 private:
 	void setWindowShape();
 	void drawBackgroundImage(QPainter *painter);
@@ -180,6 +185,8 @@ private:
 	bool hitTestEvent(MSG *pMsg, long *result);
 	long hitTestFrame(const QPoint& pt, const QRect& frameRt, const QMargins& border, int captionHeight);
 	long hitTestClient(const QPoint& pt);
+	long hitTestCaption(const QPoint& pt);
+	
 
 	void init();
 

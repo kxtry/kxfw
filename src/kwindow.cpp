@@ -248,30 +248,37 @@ void KWindow::close()
 	d->m_isClosing = false;
 }
 
+/*
+由于win7的AeroSnap特性影响，可能会导致Qt内部的最大化最小化窗口失常。
+*/
 void KWindow::showNormal()
 {
-	__super::showNormal();
+	//__super::showNormal();
+	::ShowWindow(winId(), SW_NORMAL);
 }
 
 void KWindow::showMaximized()
 {
-	__super::showMaximized();
+	//__super::showMaximized();
+	::ShowWindow(winId(), SW_MAXIMIZE);
 }
 
 void KWindow::showMinimized()
 {
-	__super::showMinimized();
+	//__super::showMinimized();
+	::ShowWindow(winId(), SW_MINIMIZE);
 }
 
 void KWindow::showMaximizeOrRestore()
 {
-	if(isMaximized())
+	if(::IsMaximized(winId()))
 	{
-		showNormal();
+		::ShowWindow(winId(), SW_RESTORE);
 	}
 	else
 	{
-		showMaximized();
+		//showMaximized();
+		::ShowWindow(winId(), SW_MAXIMIZE);
 	}
 }
 

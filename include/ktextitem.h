@@ -14,6 +14,7 @@ class KXFW_API KTextItem : public KWidget
 	Q_PROPERTY(int fontSize READ fontSize WRITE setFontSize)
 	Q_PROPERTY(QString file READ filePath WRITE setFilePath)
 	Q_PROPERTY(bool idealSizeAsMinimun READ idealSizeAsMinimun WRITE setIdealSizeAsMinimum)
+	Q_PROPERTY(QObject* edit READ graphicsText)
 public:
 	explicit KTextItem(QGraphicsItem *parent = NULL);
 	KTextItem(const QString& text, QGraphicsItem *parent = NULL);
@@ -36,6 +37,8 @@ public:
 
 	bool idealSizeAsMinimun();
 	void setIdealSizeAsMinimum(bool on);
+
+	QObject *graphicsText();
 
 protected:
 	void resizeEvent(QGraphicsSceneResizeEvent *event);

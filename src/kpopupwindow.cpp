@@ -13,6 +13,8 @@
 #include "shlwapi.h"
 #pragma comment(lib, "shlwapi.lib")
 
+#include "AeroGlass.h"
+
 KX_WINDOW_CREATOR_GLOBAL_STATIC(KPopupWindow)
 
 #define BODER_WIDTH			(3)
@@ -28,6 +30,7 @@ KPopupWindowPrivate::KPopupWindowPrivate()
 , bDragWindow(false)
 , bEnableDragWindow(true)
 , hasFrame(true)
+, bEnableAeroSnap(false)
 {
 
 }
@@ -280,6 +283,7 @@ void KPopupWindow::setWindowShape()
 	}
 }
 
+
 bool KPopupWindow::winEvent( MSG * pMsg, long * result )
 {
 	//务必调用KWindow的winEvent，因为在KWindow中处理了Qt的中文输入法BUG。
@@ -312,6 +316,8 @@ bool KPopupWindow::winEvent( MSG * pMsg, long * result )
 		return keyUpEvent(pMsg, result);
 	case WM_SYSCOMMAND:
 		return systemCommandEvent(pMsg, result);
+	case WM_NCCALCSIZE:
+		return ncCalcSizeEvent(pMsg, result);
 	}
 	return bres;
 }
@@ -347,7 +353,7 @@ bool KPopupWindow::leftButtonDownEvent(MSG *pMsg, long *result)
 	QPoint pt(GET_X_LPARAM(pMsg->lParam), GET_Y_LPARAM(pMsg->lParam));
 	if(hitTestClient(pt) == HTCAPTION)
 	{
-		if(!isMaximized())
+		if(!::IsMaximized(winId()))
 		{
 			QPoint screenPt = mapToGlobal(pt);
 			d->dragPosition = screenPt - frameGeometry().topLeft();
@@ -483,7 +489,7 @@ bool KPopupWindow::hitTestEvent( MSG *pMsg, long *result )
 	Q_D(KPopupWindow);
 
 	if(!d->bEnableDragWindow)
-		return HTCLIENT;
+		return true;
 
 	int x = LOWORD(pMsg->lParam);
 	int y = HIWORD(pMsg->lParam);
@@ -503,6 +509,7 @@ bool KPopupWindow::hitTestEvent( MSG *pMsg, long *result )
 
 long KPopupWindow::hitTestFrame( const QPoint& pt, const QRect& frameRt, const QMargins& border, int captionHeight )
 {	
+	Q_D(KPopupWindow);
 	bool bNotZoom = !::IsZoomed(winId());
 
 	QRect captionRt;
@@ -541,6 +548,10 @@ long KPopupWindow::hitTestFrame( const QPoint& pt, const QRect& frameRt, const Q
 	botRt.setCoords(frameRt.left() + border.left(), frameRt.bottom() - border.bottom(), frameRt.right() - border.right(), frameRt.bottom());
 	if(botRt.contains(pt) && bNotZoom)
 		return HTBOTTOM;
+	if(d->bEnableAeroSnap)
+	{
+		return hitTestCaption(pt);
+	}
 	return HTCLIENT;
 }
 
@@ -572,6 +583,12 @@ long KPopupWindow::hitTestClient( const QPoint& pt )
 
 	if(!d->bEnableDragWindow)
 		return HTCLIENT;
+	return hitTestCaption(pt);
+}
+
+long KPopupWindow::hitTestCaption( const QPoint& pt )
+{
+	Q_D(KPopupWindow);
 
 	QWidget *childWidget = childAt(pt);
 	if( childWidget && childWidget != viewport() )
@@ -730,12 +747,13 @@ void KPopupWindow::updateWindowStyle()
 	if(maximumButton())
 	{
 		style |= WS_MAXIMIZEBOX;
+		style |= WS_THICKFRAME;
 	}
 	DWORD dwStyle = GetWindowLong(winId(), GWL_STYLE);
 	if((dwStyle & style) == style)
 		return;
 	dwStyle |= style;
-	SetWindowLong(winId(), GWL_STYLE, dwStyle);
+	SetWindowLong(winId(), GWL_STYLE, dwStyle);	
 }
 
 QSize KPopupWindow::minimumSize() const
@@ -773,6 +791,18 @@ void KPopupWindow::setFixSize(const QSize& s)
 {
 	setMinimumSize(s);
 	setMaximumSize(s);
+}
+
+bool KPopupWindow::enableAeroSnap() const
+{
+	Q_D(const KPopupWindow);
+	return d->bEnableAeroSnap;
+}
+
+void KPopupWindow::setAeroSnapEnable( bool on )
+{
+	Q_D(KPopupWindow);
+	d->bEnableAeroSnap = on;
 }
 
 void KPopupWindow::showEvent( QShowEvent * event )
@@ -953,6 +983,9 @@ void KPopupWindow::init()
 	*/
 	setWindowFlags(Qt::FramelessWindowHint|Qt::Window|Qt::CustomizeWindowHint);
 	setAttribute(Qt::WA_DeleteOnClose);
+
+	DWMNCRENDERINGPOLICY ncrp = DWMNCRP_DISABLED;
+	CAeroGlass::DwmSetWindowAttribute(winId(), DWMWA_NCRENDERING_POLICY, &ncrp, sizeof(ncrp));
 }
 
 KPopupWindow::WindowStyles KPopupWindow::windowStyle() const
@@ -1118,6 +1151,7 @@ void KPopupWindow::construct()
 {
 	__super::construct();
 	resetFrame();
+	setVisible(false);
 }
 
 void KPopupWindow::setWindowIcon( HINSTANCE hInst, int resid )

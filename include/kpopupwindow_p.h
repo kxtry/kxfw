@@ -29,6 +29,8 @@ public:
 	int nBorderPixel;
 	bool bEnableDragWindow;
 
+	bool bEnableAeroSnap;
+
 	bool bMinButton;
 	bool bMaxButton;
 

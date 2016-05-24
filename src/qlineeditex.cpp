@@ -67,6 +67,27 @@ QSize QLineEditEx::contentSize()
 
 void QLineEditEx::showContextMenu()
 {
+	if(chineseContextMenu())
+		showCnContextMenu();
+	else{
+		showEnContextMenu();
+	}
+
+}
+
+bool QLineEditEx::chineseContextMenu() const
+{
+	QVariant va = property("chineseMenu");
+	return va.toBool();
+}
+
+void QLineEditEx::setChineseContextMenu( const bool on )
+{
+	setProperty("chineseMenu", on);
+}
+
+void QLineEditEx::showEnContextMenu()
+{
 	KMenu *popup = KMenu::createPopupMenu(0);
 	QAction *action = 0;
 
@@ -107,9 +128,67 @@ void QLineEditEx::showContextMenu()
 		action->setEnabled(!isReadOnly() && !text().isEmpty() && hasSelectedText());
 		connect(action, SIGNAL(triggered()), this, SLOT(clear()));
 	}
+	QString txt = selectedText();
+	QString txtAll = text();
+	if (txtAll != txt){
+		action = popup->addAction(QLineEdit::tr("Select All") + ACCEL_KEY(QKeySequence::SelectAll));
+		action->setEnabled(!text().isEmpty());
+		connect(action, SIGNAL(triggered()), SLOT(selectAll()));
+	}
+	
+	popup->exec();
+}
 
-	action = popup->addAction(QLineEdit::tr("Select All") + ACCEL_KEY(QKeySequence::SelectAll));
-	action->setEnabled(!text().isEmpty());
-	connect(action, SIGNAL(triggered()), SLOT(selectAll()));
+void QLineEditEx::showCnContextMenu()
+{
+	KMenu *popup = KMenu::createPopupMenu(0);
+	QAction *action = 0;
+
+	if (!isReadOnly()) 
+	{
+		action = popup->addAction("3¡¤?¨²" + ACCEL_KEY(QKeySequence::Undo));
+		action->setEnabled(isUndoAvailable());
+		connect(action, SIGNAL(triggered()), SLOT(undo()));
+
+		action = popup->addAction("???¡ä" + ACCEL_KEY(QKeySequence::Redo));
+		action->setEnabled(isRedoAvailable());
+		connect(action, SIGNAL(triggered()), SLOT(redo()));
+
+		popup->addSeparator();
+	}
+
+	if (!isReadOnly()) 
+	{
+		action = popup->addAction("???D"+ ACCEL_KEY(QKeySequence::Cut));
+		action->setEnabled(!isReadOnly() && hasSelectedText() && echoMode() == QLineEdit::Normal);
+		connect(action, SIGNAL(triggered()), SLOT(cut()));
+	}
+
+	action = popup->addAction("?¡ä??" + ACCEL_KEY(QKeySequence::Copy));
+	action->setEnabled(hasSelectedText() && echoMode() == QLineEdit::Normal);
+	connect(action, SIGNAL(triggered()), SLOT(copy()));
+
+	if (!isReadOnly()) 
+	{
+		action = popup->addAction("?3¨¬¨´" + ACCEL_KEY(QKeySequence::Paste));
+		action->setEnabled(!isReadOnly() && !QApplication::clipboard()->text().isEmpty());
+		connect(action, SIGNAL(triggered()), SLOT(paste()));
+	}
+
+	if (!isReadOnly()) 
+	{
+		action = popup->addAction("????");
+		action->setEnabled(!isReadOnly() && !text().isEmpty() && hasSelectedText());
+		connect(action, SIGNAL(triggered()), this, SLOT(clear()));
+	}
+
+	QString txt = selectedText();
+	QString txtAll = text();
+	if (txtAll != txt){
+		action = popup->addAction("????¨¨?2?" + ACCEL_KEY(QKeySequence::SelectAll));
+		action->setEnabled(!text().isEmpty());
+		connect(action, SIGNAL(triggered()), SLOT(selectAll()));
+	}
+	
 	popup->exec();
 }

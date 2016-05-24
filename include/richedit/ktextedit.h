@@ -7,6 +7,7 @@
 
 class KFrameItem;
 class QTextBrowserEx;
+class KTextObject;
 
 class KXFW_API KTextEdit : public KWidget
 {
@@ -152,6 +153,8 @@ public:
 	QColor scrollBarColor() const;
 	void setScrollBarColor(const QColor& clr);
 
+	void registerTextObjectHandler(int objectType, KTextObject* ctrl);
+
 //TODO:
 	QWidget* realWidget() const;
 	QGraphicsProxyWidget *proxyWidget() const;
@@ -178,7 +181,6 @@ public:
 
 public:
 	bool isModified();
-	void setModified(bool m=true);
 	bool fontBold();
 	void setFontBold(bool on);
 	bool fontItalic();
@@ -208,6 +210,7 @@ signals:
 	void returnPressed();
 	void textChanged();
 	void currentCharFormatChanged(const QTextCharFormat & f);
+	void clearContent();
 
 public slots:
 	void copy();

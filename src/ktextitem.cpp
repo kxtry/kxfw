@@ -312,3 +312,9 @@ void KTextItem::setIdealSizeAsMinimum( bool on )
 	Q_D(KTextItem);
 	d->bidealSizeAsMinimum = on;
 }
+
+QObject * KTextItem::graphicsText()
+{
+	Q_D(KTextItem);
+	return d->edit;
+}

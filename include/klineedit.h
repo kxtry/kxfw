@@ -14,6 +14,8 @@ class KXFW_API KLineEdit : public KWidget
 	Q_PROPERTY(bool focus READ focus WRITE setFocus )
 	Q_PROPERTY(QString styleSheet READ styleSheet WRITE setStyleSheet )
 	Q_PROPERTY(QString text READ text WRITE setText)
+	Q_PROPERTY(QColor textColor READ textColor WRITE setTextColor)
+	Q_PROPERTY(int fontSize READ fontSize WRITE setFontSize)
 	Q_PROPERTY(QString adjustText READ text WRITE setAdjustText)
 	Q_PROPERTY(int maxLength READ maxLength WRITE setMaxLength)
 	Q_PROPERTY(QLineEdit::EchoMode mode READ echoMode WRITE setEchoMode)
@@ -56,6 +58,12 @@ public:
 
 	void setLabel();
 	void setEdit();
+
+	QColor textColor();
+	void setTextColor(const QColor &clr);
+
+	int fontSize() const;
+	void setFontSize(int fs);
 
 	bool focus();
 	void setFocus(bool on=true);

@@ -6,6 +6,8 @@
 #include "kwidget_p.h"
 #include "kmessagebox.h"
 
+#include <QPalette>
+
 KX_WIDGET_CREATOR_GLOBAL_STATIC(KLineEdit)
 class KLineEditPrivate: public KWidgetPrivate
 {
@@ -474,4 +476,32 @@ void KLineEdit::setHasContextMenu( bool on )
 {
 	Q_D(KLineEdit);
 	d->hasContextMenu = on;
+}
+
+QColor KLineEdit::textColor()
+{
+	Q_D(KLineEdit);
+	const QPalette& pa = d->lineEdit->palette();
+	return pa.color(QPalette::Text);
+}
+
+void KLineEdit::setTextColor( const QColor &clr )
+{
+	Q_D(KLineEdit);
+	QPalette palette = d->lineEdit->palette();
+	palette.setColor(QPalette::Text, clr);
+	d->lineEdit->setPalette(palette);
+}
+
+int KLineEdit::fontSize() const
+{
+	QFont f = font();
+	return f.pixelSize();
+}
+
+void KLineEdit::setFontSize( int fs )
+{
+	QFont f = font();
+	f.setPixelSize(fs);
+	setFont(f);
 }

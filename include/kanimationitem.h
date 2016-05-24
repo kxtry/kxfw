@@ -66,7 +66,7 @@ public:
 	Q_INVOKABLE void stop();
 
 private slots:
-	void on_frameChanged ( int frameNumber );
+	void on_frameChanged ( );
 	void on_finished();
 
 protected:

@@ -14,10 +14,13 @@ KX_WIDGET_CREATOR_GLOBAL_STATIC(KListWidget)
 
 #define ITEM_DEFAULT_HEIGHT		(20)
 
+#define SCROLLBAR_THICKNESS		(18)
+
 KListWidgetPrivate::KListWidgetPrivate()
 	: m_indexSelect(-1)
 	, m_indexWidgetItemBegin(0)
 	, m_valueCurrentScroll(0)
+	, m_thinknessScrollbar(18)
 	, m_heightContentBottomHidden(10)
 	, m_heightContentTopHidden(0)
 	, m_heightSelect(ITEM_DEFAULT_HEIGHT)
@@ -40,9 +43,6 @@ void KListWidgetPrivate::init()
 	q->setFlag(QGraphicsItem::ItemClipsChildrenToShape);
 	q->setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton);
 	m_creator = new KListItemCreatorT<KListItem>();
-	m_scrollbar = new KScrollBar(q);
-	QObject::connect(m_scrollbar, SIGNAL(valueChanged(qreal)), q, SLOT(on_scroll_valueChanged(qreal)));
-	m_scrollbar->hide();
 }
 
 void KListWidgetPrivate::itemsInserted(int index, int n)
@@ -107,10 +107,16 @@ void KListWidgetPrivate::resetAreas()
 	if(winSize.height() < itemsHeight())
 	{
 		//需要滚动条
+		if(m_scrollbar == NULL)
+		{
+			m_scrollbar = new KScrollBar(q);
+			QObject::connect(m_scrollbar, SIGNAL(valueChanged(qreal)), q, SLOT(on_scroll_valueChanged(qreal)));
+		}
 		qreal thickness = m_scrollbar->frameThickness();
 		m_vscrollArea = QRectF(winSize.width() - thickness, 0, thickness, winSize.height());
-		m_contentArea = QRectF(0, 0, winSize.width() - thickness, winSize.height());
+		m_contentArea = QRectF(0, 0, winSize.width() - m_thinknessScrollbar, winSize.height());
 		m_scrollbar->setGeometry(m_vscrollArea);
+		m_scrollbar->setFixSize(m_vscrollArea.size());
 		qreal maxval = maxScrollValue();
 		m_scrollbar->setRange(0, maxval);
 		m_valueCurrentScroll = qBound<int>(0, m_valueCurrentScroll, maxval);

@@ -13,9 +13,9 @@ public:
 	Q_DECLARE_PUBLIC(KAnimationItem);
 
 	KAnimationItemPrivate(void)
-		: movieShow( NULL )
+		: movieFrameIndex( 0 )
 		, isPlayLoop( true )
-		, playPolicy(KAnimationItem::NoDefine)
+		, playPolicy(KAnimationItem::PlayToVisible)
 		, smooth(false)
 		, stretch(false)
 		, borderPixel(0)
@@ -28,13 +28,42 @@ public:
 
 	}
 
+	void extractMovie(const QString& imageName)
+	{
+		QMovie mov(imageName);
+		if(!mov.isValid())
+		{
+			movieFrameIndex = 0;
+			movieFrames = QList<QPixmap>();
+			return;
+		}
+		mov.start();
+		int ms = mov.nextFrameDelay();
+		if(ms <= 0)
+		{
+			ms = 200;
+		}
+		movieTimer.setInterval(ms);
+		if(movieTimer.isActive())
+		{
+			movieTimer.start();
+		}
+		for(int i = 0; i < mov.frameCount(); i++)
+		{
+			mov.jumpToFrame(i);
+			QPixmap img = mov.currentPixmap();
+			movieFrames.append(img);
+		}
+	}
+
 private:
+	int					movieFrameIndex;
+	QTimer				movieTimer;
+	QList<QPixmap>		movieFrames;
 	bool				isPlayLoop;
-	QPointer<QMovie>	movieShow;		//播放器
 	QColor				borderColor;
 	int					borderPixel;
 	int					roundPixel;
-	QByteArray			data;
 	QBuffer				buf;
 	KAnimationItem::PlayPolicy	playPolicy;
 	QMargins			margins;
@@ -56,91 +85,51 @@ void KAnimationItem::init()
 {
 	Q_D(KAnimationItem);
 	setFlag(QGraphicsItem::ItemClipsToShape);
-	d->movieShow = new QMovie(this);
-	connect(d->movieShow, SIGNAL(frameChanged(int)), this, SLOT(on_frameChanged(int)));
+
+	QObject::connect(&d->movieTimer, SIGNAL(timeout()), this, SLOT(on_frameChanged()));
+	d->movieTimer.setInterval(200);
 }
 
-void KAnimationItem::on_frameChanged ( int frameNumber )
+void KAnimationItem::on_frameChanged( )
 {
-	Q_UNUSED(frameNumber);
 	Q_D(KAnimationItem);
-
-	if (!d->isPlayLoop && frameNumber == d->movieShow->frameCount() - 1 )
+	
+	if(d->movieFrames.count())
 	{
-		stop();
+		int idx = (d->movieFrameIndex + 1) % d->movieFrames.count();
+		d->movieFrameIndex = idx;
 	}
+	
 	update();
 }
 
 QString KAnimationItem::imagePath() const
 {
-	return d_func()->movieShow->fileName();
+	return "";
 }
-
-#define FIX_LIST_ITEM_QUICK_SCROL_BUG
 
 void KAnimationItem::setImagePath( const QString &imageName )
 {
 	Q_D(KAnimationItem);
 	
-	QMovie::MovieState ms = d->movieShow->state();
-	if(ms != QMovie::NotRunning)
-	{
-		d->movieShow->stop();
-	}
-
-	if ( imageName.isEmpty() )
-	{
-		d->data.clear();
-		d->buf.close();
-		d->movieShow->setDevice( NULL );
-	}
-	else
-	{
-		d->data = KResource::loadRawData(imageName);
-
-		d->buf.close();
-		d->buf.setData( d->data );
-#ifdef FIX_LIST_ITEM_QUICK_SCROL_BUG
-		if(d->movieShow->isValid())
-		{
-			/*
-			以下清除是为解决，在列表中快速滚动时，而造成重新设置动画图片而失效问题。
-			一般情况下，没有以下清除动作，是不会出现问题的，但在列表中快速滚动时，却出现了，别无它法。
-			*/
-			qDeleteLater(d->movieShow);
-			d->movieShow = new QMovie(this);
-			QObject::connect(d->movieShow, SIGNAL(frameChanged(int)), this, SLOT(on_frameChanged(int)));
-		}
-#endif
-		d->movieShow->setDevice( &d->buf );
-		d->movieShow->jumpToFrame(0);
-
-		if(ms == QMovie::Paused)
-		{
-			d->movieShow->start();
-			d->movieShow->setPaused(true);
-		}
-		else if(ms == QMovie::Running)
-		{
-			d->movieShow->start();
-		}
-	}
+	d->extractMovie(imageName);
 	update();
 }
 
 void KAnimationItem::start()
 {
 	Q_D(KAnimationItem);
-	d->movieShow->start();
+	
+	
+	d->movieTimer.start();
 	update();
+	
 }
 
 void KAnimationItem::stop()
 {
 	Q_D(KAnimationItem);
-	d->movieShow->stop();
-	d->movieShow->jumpToFrame(0);
+	d->movieTimer.stop();
 	update();
 }
 
@@ -188,11 +177,11 @@ void KAnimationItem::paint( QPainter *painter, const QStyleOptionGraphicsItem *o
 	Q_D(KAnimationItem);
 
 	/*绘制动画*/
-	if(!d->data.isEmpty())
+	if(d->movieFrames.count())
 	{
 		bool onold = painter->testRenderHint(QPainter::SmoothPixmapTransform);
 		painter->setRenderHint(QPainter::SmoothPixmapTransform, d->smooth);
-		QPixmap pix = d->movieShow->currentPixmap();
+		QPixmap pix = d->movieFrames[d->movieFrameIndex];
 		QRectF marginRt = rect();
 		QSizeF drawSize = pix.size();
 		marginRt.adjust(d->margins.left(), d->margins.top(), -d->margins.right(), -d->margins.bottom());
@@ -236,19 +225,16 @@ QSize KAnimationItem::getMovieSize(bool simple )
     Q_D(KAnimationItem);
     int w = 0;
     int h = 0;
-    if(d->movieShow)
+    if(d->movieFrames.count() > 0)
     {
 		if(simple)
 		{
-			d->movieShow->jumpToFrame(0);
-			QPixmap pix = d->movieShow->currentPixmap();
+			QPixmap pix = d->movieFrames[0];
 			return pix.size();
 		}
-		int fcount = d->movieShow->frameCount();
-		for (int i=0;i<fcount;++i)
+		for (int i=0;i<d->movieFrames.count();++i)
 		{
-			d->movieShow->jumpToFrame(i);
-			QImage  img =d->movieShow->currentImage();
+			QPixmap  img = d->movieFrames[i];
 			if(!img.isNull())
 			{
 				if(img.rect().width()>w)
@@ -260,8 +246,7 @@ QSize KAnimationItem::getMovieSize(bool simple )
 					h = img.rect().height();
 				}
 			}
-		}		
-		d->movieShow->jumpToFrame(0);
+		}
 		return QSize(w, h);
     }
 
